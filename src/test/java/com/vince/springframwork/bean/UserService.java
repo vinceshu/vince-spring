@@ -7,13 +7,27 @@ package com.vince.springframwork.bean;
  */
 public class UserService {
 
-    private String name;
+    private String uid;
 
-    public UserService(String name) {
-        this.name = name;
+    private UserDao userDao;
+
+    public String queryUserInfo() {
+        return userDao.queryUserName(uid);
     }
 
-    public String queryUserName() {
-        return name;
+    public String getuId() {
+        return uid;
+    }
+
+    public void setuId(String uid) {
+        this.uid = uid;
+    }
+
+    public UserDao getUserDao() {
+        return userDao;
+    }
+
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
     }
 }

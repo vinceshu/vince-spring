@@ -1,7 +1,11 @@
 package com.vince.springframwork;
 
+import com.vince.springframwork.bean.UserDao;
 import com.vince.springframwork.bean.UserService;
 import com.vince.springframwork.factory.config.BeanDefinition;
+import com.vince.springframwork.factory.config.BeanReference;
+import com.vince.springframwork.factory.property.PropertyValue;
+import com.vince.springframwork.factory.property.PropertyValues;
 import com.vince.springframwork.factory.support.DefaultListableBeanFactory;
 import org.junit.Test;
 
@@ -22,14 +26,21 @@ public class ApiTest {
         DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
         //2、注册bean
-        BeanDefinition beanDefinition = new BeanDefinition(UserService.class);
+        beanFactory.registerBeanDefinition("userDao", new BeanDefinition(UserDao.class));
+
+        //3、给bean设置属性值
+        PropertyValues propertyValues = new PropertyValues();
+        propertyValues.addPropertyValue(new PropertyValue("uid", "10001"));
+        propertyValues.addPropertyValue(new PropertyValue("userDao", new BeanReference("userDao")));
+
+        //4、userService注入bean
+        BeanDefinition beanDefinition = new BeanDefinition(UserService.class, propertyValues);
         beanFactory.registerBeanDefinition("userService", beanDefinition);
 
-        //3、第一次获取bean
-        UserService userService = (UserService) beanFactory.getBean("userService", "vinceshu");
-        String userName = userService.queryUserName();
-        System.out.println(userName);
-
+        //5、userService获取bean
+        UserService userService = (UserService) beanFactory.getBean("userService");
+        String s = userService.queryUserInfo();
+        System.out.println(s);
     }
 
 }

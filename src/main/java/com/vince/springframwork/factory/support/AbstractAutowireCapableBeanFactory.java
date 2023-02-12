@@ -1,7 +1,11 @@
 package com.vince.springframwork.factory.support;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.vince.springframwork.exception.BeansException;
 import com.vince.springframwork.factory.config.BeanDefinition;
+import com.vince.springframwork.factory.config.BeanReference;
+import com.vince.springframwork.factory.property.PropertyValue;
+import com.vince.springframwork.factory.property.PropertyValues;
 
 import java.lang.reflect.Constructor;
 
@@ -10,7 +14,7 @@ import java.lang.reflect.Constructor;
  * @data 2023/2/11 21:54
  * @description
  */
-public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory{
+public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory {
 
     private InstantiationStrategy instantiationStrategy = new CglibSubClassingInstantiationStrategy();
 
@@ -18,8 +22,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     protected Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeansException {
         Object beanInstance = null;
         try {
-            //获取bean实例对象
+            //创建并获取bean实例对象
             beanInstance = createBeanInstance(beanDefinition, beanName, args);
+            //给bean对象填充属性
+            applyPropertyValues(beanName, beanInstance, beanDefinition);
         } catch (Exception e) {
             throw new BeansException("Instantiation of bean failed", e);
         }
@@ -28,7 +34,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         return beanInstance;
     }
 
-
+    /**
+     * 创建并获取bean实例对象
+     * @param beanDefinition bean定义信息
+     * @param beanName bean名称
+     * @param args bean属性参数
+     * @return
+     */
     protected Object createBeanInstance(BeanDefinition beanDefinition, String beanName, Object[] args) {
         Constructor<?> constructor = null;
         Class<?> beanClass = beanDefinition.getBeanClass();
@@ -40,6 +52,30 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             }
         }
         return getInstantiationStrategy().instantiate(beanDefinition, beanName, constructor, args);
+    }
+
+    /**
+     * 给bean对象填充属性
+     * @param beanName bean名称
+     * @param beanInstance bean实例
+     * @param beanDefinition bean定义信息
+     */
+    protected void applyPropertyValues(String beanName, Object beanInstance, BeanDefinition beanDefinition) {
+        try {
+            PropertyValues propertyValues = beanDefinition.getPropertyValues();
+            for (PropertyValue propertyValue : propertyValues.getPropertyValues()) {
+                String name = propertyValue.getName();
+                Object value = propertyValue.getValue();
+                if (value instanceof BeanReference) {
+                    BeanReference beanReference = (BeanReference) value;
+                    value = getBean(beanReference.getBeanName());
+                }
+                //属性填充
+                BeanUtil.setFieldValue(beanInstance, name, value);
+            }
+        } catch (Exception e) {
+            throw new BeansException("Error setting property values: " + beanName);
+        }
     }
 
 
