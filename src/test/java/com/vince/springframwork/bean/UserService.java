@@ -7,7 +7,7 @@ package com.vince.springframwork.bean;
  */
 public class UserService {
 
-    public String queryUser() {
+    public String queryUserName() {
         return "vinceshu";
     }
 }
