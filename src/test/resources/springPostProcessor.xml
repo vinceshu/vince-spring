@@ -10,6 +10,7 @@
         <property name="userDao" ref="userDao"/>
     </bean>
 
-    <bean class="com.vince.springframework.common.MyBeanFactoryPostProcessor"/>
     <bean class="com.vince.springframework.common.MyBeanPostProcessor"/>
+    <bean class="com.vince.springframework.common.MyBeanFactoryPostProcessor"/>
+
 </beans>

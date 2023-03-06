@@ -9,18 +9,14 @@ public class UserService {
 
     private String uid;
 
+    private String company;
+
+    private String location;
+
     private UserDao userDao;
 
     public String queryUserInfo() {
-        return userDao.queryUserName(uid);
-    }
-
-    public String getuId() {
-        return uid;
-    }
-
-    public void setuId(String uid) {
-        this.uid = uid;
+        return userDao.queryUserName(uid) + "," + company + "," + location;
     }
 
     public UserDao getUserDao() {
@@ -29,5 +25,29 @@ public class UserService {
 
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }
